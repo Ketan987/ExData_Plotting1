@@ -1,0 +1,31 @@
+
+library(lubridate)
+
+df <- read.table("household_power_consumption.txt",header = TRUE, sep = ";",na.strings = "?" ,stringsAsFactors = TRUE)
+data <- subset(df, df$Date == "1/2/2007" | df$Date == "2/2/2007")
+
+datetime <- paste(as.Date(data$Date, format = "%d/%m/%Y"), data$Time)
+data$datetime <- as.POSIXct(datetime)
+
+
+png("plot4.png", width = 480, height = 480, units = "px")
+
+par(mfrow = c(2,2), mar = c(4, 4, 2, 1))
+
+#Plotting first plot
+plot(data$Global_active_power ~ data$datetime, ylab = "Global active power", xlab = "", type = "l")
+
+#plottinng second plot
+plot(data$Voltage ~ data$datetime, ylab = "Voltage", xlab = "datetime", type = "l")
+
+#plotting Third plot
+with(data, plot(datetime, Sub_metering_1, type = "l", ylab = "Energy Sub Metering", xlab = "", col = "black"))
+lines(data$datetime, data$Sub_metering_2, col = "red")
+lines(data$datetime, data$Sub_metering_3, col = "blue")
+legend("topright", col = c("black", "red", "blue"), lty = 1, lwd = 2,
+       legend = c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
+
+#plotting fourth graph
+plot(data$Global_reactive_power ~ data$datetime, xlab = "datetime", type = "l")
+
+dev.off()
